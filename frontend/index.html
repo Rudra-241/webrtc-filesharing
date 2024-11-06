@@ -156,15 +156,93 @@
       }
       .button-container {
         display: flex;
-        justify-content: space-around; /* Adds space around the divs */
-        align-items: center; /* Vertically centers the divs */
-        width: 100%; /* Occupy full width of the parent container */
-        max-width: 900px; /* Set a max width to prevent overflow */
-        margin: 0 auto; /* Centers the container in the page */
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
       }
 
       .button-container > div {
         min-width: 400px; /* Ensures each div is at least 400px */
+      }
+
+      .buttonDownload {
+        display: inline-block;
+        position: relative;
+        padding: 10px 25px;
+        background-color: #4cc713;
+        color: white;
+        font-family: sans-serif;
+        text-decoration: none;
+        font-size: 0.9em;
+        text-align: center;
+        text-indent: 15px;
+        border: none;
+      }
+
+      .buttonDownload:hover {
+        background-color: #45a21a;
+        color: white;
+      }
+
+      .buttonDownload:before,
+      .buttonDownload:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 15px;
+        top: 52%;
+      }
+
+      .buttonDownload:before {
+        width: 10px;
+        height: 2px;
+        border-style: solid;
+        border-width: 0 2px 2px;
+      }
+
+      .buttonDownload:after {
+        width: 0;
+        height: 0;
+        margin-left: 3px;
+        margin-top: -7px;
+        border-style: solid;
+        border-width: 4px 4px 0 4px;
+        border-color: transparent;
+        border-top-color: inherit;
+        animation: downloadArrow 1s linear infinite;
+        animation-play-state: paused;
+      }
+
+      .buttonDownload:hover:before {
+        border-color: #cdefbd;
+      }
+
+      .buttonDownload:hover:after {
+        border-top-color: #cdefbd;
+        animation-play-state: running;
+      }
+
+      @keyframes downloadArrow {
+        0% {
+          margin-top: -7px;
+          opacity: 1;
+        }
+
+        0.001% {
+          margin-top: -15px;
+          opacity: 0.4;
+        }
+
+        50% {
+          opacity: 1;
+        }
+
+        100% {
+          margin-top: 0;
+          opacity: 0.4;
+        }
       }
     </style>
   </head>
@@ -350,11 +428,23 @@
         const arrayBuffer = event.data;
         const blob = new Blob([arrayBuffer]);
         const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "received_file";
-        link.textContent = "Download Received File";
-        document.getElementById("receivedFiles").appendChild(link);
+
+        // Create a button element with an ID
+        const downloadButton = document.createElement("button");
+        downloadButton.class = "buttonDownload";
+        downloadButton.textContent = "Download Received File";
+        downloadButton.onclick = () => {
+          const fileName = "received_file";
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(url);
+        };
+
+        // Append the button to the receivedFiles div
+        const receivedFilesDiv = document.getElementById("receivedFiles");
+        receivedFilesDiv.appendChild(downloadButton);
       }
     </script>
   </body>
