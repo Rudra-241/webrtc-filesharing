@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* General Styling */
+   /* General Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #1f1f1f; /* Dark background for a professional look */
+}
+
+/* Form Container */
+.form-container {
+    background: #000000;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 12px 40px rgb(0, 0, 0);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid #444; /* Subtle outer border */
+}
+
+h2 {
+    font-size: 1.75rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+/* Input Fields */
+form input {
+    width: 100%;
+    padding: 0.85rem;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    background: #222;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #ddd;
+    transition: all 0.3s ease;
+}
+
+form input::placeholder {
+    color: #888;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #9face6;
+    box-shadow: 0 0 5px rgba(159, 172, 230, 0.5);
+    background: #333;
+}
+
+button {
+  height: 50px;
+  margin: 5px;
+  width: 120px;
+  background: #333;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-family: Consolas, Courier New, monospace;
+  border: solid #404c5d 1px;
+  font-size: 16px;
+  color: rgb(161, 161, 161);
+  -webkit-transition: 500ms;
+  transition: 500ms;
+  border-radius: 5px;
+  background: linear-gradient(145deg, #2e2d2d, #212121);
+  -webkit-box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b,
+    inset 5px 5px 10px #212121, inset -5px -5px 10px #212121;
+  box-shadow: -1px -5px 15px #41465b, 5px 5px 15px #41465b,
+    inset 5px 5px 10px #212121, inset -5px -5px 10px #212121;
+}
+
+button:hover {
+  -webkit-box-shadow: 1px 1px 13px #20232e, -1px -1px 13px #545b78;
+  box-shadow: 1px 1px 13px #20232e, -1px -1px 13px #545b78;
+  color: #d6d6d6;
+  -webkit-transition: 500ms;
+  transition: 500ms;
+}
+
+button:active {
+  -webkit-box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78;
+  box-shadow: 1px 1px 13px #20232e, -1px -1px 33px #545b78;
+  color: #d6d6d6;
+  -webkit-transition: 100ms;
+  transition: 100ms;
+}
+
+
+/* Register Link */
+.register-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.register-link a {
+    color: #74ebd5;
+    text-decoration: none;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+}
+
+.register-link a:hover {
+    color: #9face6;
+    border-bottom: 1px solid #9face6;
+}
+
+p {
+  color: white;
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+        <form action="/login" method="POST">
+            <h2>Login</h2>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <p class="register-link">
+                Don’t have an account?
+                <a href="/register">Register here</a>
+            </p>
+        </form>
+    </div>
+</body>
+
+</html>

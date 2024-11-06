@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>P2P File Transfer</title>
+    <style>
+      /* Basic Reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background: black;
+        color: #fff;
+        text-align: center;
+      }
+
+      /* Container */
+      .container {
+        width: 90%;
+        max-width: 500px;
+        padding: 40px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 10px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 30px;
+      }
+
+      /* Form */
+      .form {
+        display: none;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      input[type="text"],
+      input[type="file"] {
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        font-size: 1rem;
+      }
+
+      button.connect-button,
+      button.send-button {
+        padding: 10px;
+        font-size: 1rem;
+        background: #42a5f5;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button.connect-button:hover,
+      button.send-button:hover {
+        background: #2196f3;
+      }
+
+      .login-box form a {
+        position: relative;
+        display: inline-block;
+        padding: 10px 20px;
+        color: #ffffff;
+        font-size: 64px;
+        text-decoration: none;
+        text-transform: uppercase;
+        overflow: hidden;
+        transition: 0.5s;
+        margin-top: 40px;
+        letter-spacing: 4px;
+        min-width: 350px;
+      }
+
+      .login-box a:hover {
+        background: #03f40f;
+        color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px #03f40f, 0 0 25px #03f40f, 0 0 50px #03f40f,
+          0 0 100px #03f40f;
+      }
+
+      .login-box a span {
+        position: absolute;
+        display: block;
+      }
+
+      @keyframes btn-anim1 {
+        0% {
+          left: -100%;
+        }
+
+        50%,
+        100% {
+          left: 100%;
+        }
+      }
+
+      .login-box a span:nth-child(1) {
+        bottom: 2px;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #03f40f);
+        animation: btn-anim1 2s linear infinite;
+      }
+
+      .login-box2 form a {
+        position: relative;
+        display: inline-block;
+        padding: 10px 20px;
+        color: #ffffff;
+        min-width: 100px;
+        font-size: 64px;
+        text-decoration: none;
+        text-transform: uppercase;
+        overflow: hidden;
+        transition: 0.5s;
+        margin-top: 40px;
+        letter-spacing: 4px;
+      }
+
+      .login-box2 a:hover {
+        background: #038cf4;
+        color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px #038cf4, 0 0 25px #038cf4, 0 0 50px #038cf4,
+          0 0 100px #038cf4;
+      }
+
+      .login-box2 a span {
+        position: absolute;
+        display: block;
+      }
+
+      .login-box2 a span:nth-child(1) {
+        bottom: 2px;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #038cf4);
+        animation: btn-anim1 2s linear infinite;
+      }
+      .button-container {
+        display: flex;
+        justify-content: space-around; /* Adds space around the divs */
+        align-items: center; /* Vertically centers the divs */
+        width: 100%; /* Occupy full width of the parent container */
+        max-width: 900px; /* Set a max width to prevent overflow */
+        margin: 0 auto; /* Centers the container in the page */
+      }
+
+      .button-container > div {
+        min-width: 400px; /* Ensures each div is at least 400px */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>P2P File Transfer</h1>
+      <h3 id="myPeerId"></h3>
+
+      <!-- <button class="choice-button" onclick="showForm('send')">Send File</button>
+        <button class="choice-button" onclick="showForm('receive')">Receive File</button> -->
+
+      <div class="button-container">
+        <div class="login-box">
+          <form>
+            <div class="user-box"></div>
+            <center>
+              <a onclick="showForm('send')">
+                Send
+                <span></span>
+              </a>
+            </center>
+          </form>
+        </div>
+
+        <div class="login-box2">
+          <form>
+            <div class="user-box2"></div>
+            <center>
+              <a onclick="showForm('receive')">
+                Receive
+                <span></span>
+              </a>
+            </center>
+          </form>
+        </div>
+      </div>
+      <!-- Send File Form -->
+      <div id="sendForm" class="form">
+        <input type="file" id="fileInput" />
+        <input
+          type="text"
+          id="peerIdSend"
+          placeholder="Enter Receiver's Peer ID"
+        />
+        <button class="send-button" onclick="sendFile()">Send File</button>
+      </div>
+
+      <!-- Receive File Form -->
+      <div id="receiveForm" class="form">
+        <input
+          type="text"
+          id="peerIdReceive"
+          placeholder="Enter Sender's Peer ID"
+        />
+        <button class="connect-button" onclick="connect()">Connect</button>
+        <div id="receivedFiles"></div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <script>
+      function getUsernameFromJwt(token) {
+        try {
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split("")
+              .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+              .join("")
+          );
+
+          const payload = JSON.parse(jsonPayload);
+          return payload.username; // Return only the username
+        } catch (error) {
+          console.error("Invalid JWT token:", error);
+          return null;
+        }
+      }
+
+      const ws = new WebSocket("ws://localhost:8080");
+      let peerConnection;
+      let dataChannel;
+
+      const cookieval = document.cookie.replace("token=", "");
+      console.log(cookieval);
+      const peerId = getUsernameFromJwt(cookieval);
+
+      ws.onopen = () =>
+        ws.send(JSON.stringify({ type: "join", id: cookieval }));
+
+      ws.onmessage = async (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "offer") {
+          await handleOffer(data.offer, data.from);
+        } else if (data.type === "answer") {
+          await peerConnection.setRemoteDescription(
+            new RTCSessionDescription(data.answer)
+          );
+        } else if (data.type === "candidate") {
+          await peerConnection.addIceCandidate(
+            new RTCIceCandidate(data.candidate)
+          );
+        }
+      };
+
+      function showForm(choice) {
+        document.getElementById("sendForm").style.display =
+          choice === "send" ? "flex" : "none";
+        document.getElementById("receiveForm").style.display =
+          choice === "receive" ? "flex" : "none";
+      }
+
+      async function connect() {
+        const remotePeerId = document.getElementById("peerIdReceive").value;
+        if (!remotePeerId) return alert("Please enter the Sender's Peer ID.");
+
+        peerConnection = new RTCPeerConnection();
+        dataChannel = peerConnection.createDataChannel("fileTransfer");
+        dataChannel.onopen = () => console.log("Data channel opened");
+        dataChannel.onmessage = handleReceivedMessage;
+
+        peerConnection.onicecandidate = ({ candidate }) => {
+          if (candidate) {
+            ws.send(
+              JSON.stringify({ type: "candidate", to: remotePeerId, candidate })
+            );
+          }
+        };
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        ws.send(
+          JSON.stringify({
+            type: "offer",
+            to: remotePeerId,
+            offer,
+            from: peerId,
+          })
+        );
+      }
+
+      async function handleOffer(offer, from) {
+        peerConnection = new RTCPeerConnection();
+
+        peerConnection.ondatachannel = (event) => {
+          dataChannel = event.channel;
+          dataChannel.onmessage = handleReceivedMessage;
+        };
+
+        peerConnection.onicecandidate = ({ candidate }) => {
+          if (candidate) {
+            ws.send(JSON.stringify({ type: "candidate", to: from, candidate }));
+          }
+        };
+
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(offer)
+        );
+
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        ws.send(JSON.stringify({ type: "answer", to: from, answer }));
+      }
+
+      function sendFile() {
+        const file = document.getElementById("fileInput").files[0];
+        const receiverId = document.getElementById("peerIdSend").value;
+        if (!file || !dataChannel || dataChannel.readyState !== "open") {
+          return alert("No file selected or data channel is not open.");
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const arrayBuffer = reader.result;
+          dataChannel.send(arrayBuffer);
+          alert(`File "${file.name}" sent.`);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      function handleReceivedMessage(event) {
+        const arrayBuffer = event.data;
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "received_file";
+        link.textContent = "Download Received File";
+        document.getElementById("receivedFiles").appendChild(link);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - WebRTC File Transfer</title>
+</head>
+<body>
+    <h1>Welcome, <%= username %>!</h1>
+    <p>This is your peer-to-peer file transfer dashboard.</p>
+    <button id="startButton">Start Connection</button>
+    <input type="file" id="fileInput" style="display: none;" />
+    <button id="sendFileButton" style="display: none;">Send File</button>
+    <a href="/logout">Logout</a>
+    <style>
+        
+    </style>
+    <script>
+        const username = "<%= username %>";
+        const ws = new WebSocket(`ws://${window.location.hostname}:3000`);
+        let peerConnection;
+        let dataChannel;
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ type: "register", username }));
+        };
+
+        ws.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "offer") {
+                await handleOffer(data.offer, data.username);
+            } else if (data.type === "answer") {
+                await handleAnswer(data.answer);
+            } else if (data.type === "candidate") {
+                await handleCandidate(data.candidate);
+            }
+        };
+
+        document.getElementById("startButton").onclick = async () => {
+            peerConnection = new RTCPeerConnection();
+            dataChannel = peerConnection.createDataChannel("fileTransfer");
+
+            dataChannel.onopen = () => {
+                document.getElementById("fileInput").style.display = "block";
+                document.getElementById("sendFileButton").style.display = "block";
+            };
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    ws.send(JSON.stringify({
+                        type: "candidate",
+                        candidate: event.candidate,
+                        username: "<target_username>"
+                    }));
+                }
+            };
+
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            ws.send(JSON.stringify({ type: "offer", offer, username: "<target_username>" }));
+        };
+
+        async function handleOffer(offer, targetUsername) {
+            peerConnection = new RTCPeerConnection();
+            peerConnection.ondatachannel = (event) => {
+                dataChannel = event.channel;
+                dataChannel.onopen = () => {
+                    document.getElementById("fileInput").style.display = "block";
+                    document.getElementById("sendFileButton").style.display = "block";
+                };
+            };
+
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    ws.send(JSON.stringify({ type: "candidate", candidate: event.candidate, target: targetUsername }));
+                }
+            };
+
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+
+            ws.send(JSON.stringify({ type: "answer", answer, target: targetUsername }));
+        }
+
+        async function handleAnswer(answer) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        }
+
+        async function handleCandidate(candidate) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        }
+
+        document.getElementById("sendFileButton").onclick = () => {
+            const file = document.getElementById("fileInput").files[0];
+            if (file && dataChannel) {
+                dataChannel.send(file);
+                alert("File sent!");
+            }
+        };
+    </script>
+</body>
+</html>
+
