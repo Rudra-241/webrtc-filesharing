@@ -323,7 +323,8 @@
         }
       }
 
-      const ws = new WebSocket("ws://localhost:8080");
+    const wsURL = `ws://${window.location.hostname}:8080`
+    const ws = new WebSocket(wsURL);
       let peerConnection;
       let dataChannel;
 
@@ -429,9 +430,8 @@
         const blob = new Blob([arrayBuffer]);
         const url = URL.createObjectURL(blob);
 
-        // Create a button element with an ID
         const downloadButton = document.createElement("button");
-        downloadButton.class = "buttonDownload";
+        downloadButton.className = "buttonDownload";
         downloadButton.textContent = "Download Received File";
         downloadButton.onclick = () => {
           const fileName = "received_file";

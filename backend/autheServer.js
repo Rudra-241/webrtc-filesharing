@@ -82,7 +82,7 @@ app.get("/dashboard", authenticateToken, (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-    res.clearCookie("token").redirect("/login");
+    res.clearCookie("token").redirect("/dashboard");
 });
 
 
